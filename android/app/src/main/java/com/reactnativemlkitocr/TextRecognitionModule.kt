@@ -1,29 +1,36 @@
 package com.reactnativemlkitocr
 
-import android.graphics.BitmapFactory
+import android.net.Uri                      
 import com.facebook.react.bridge.*
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import java.io.File
 
 class TextRecognitionModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
-  override fun getName(): String {
-    return "TextRecognitionModule"
-  }
+  override fun getName(): String = "TextRecognitionModule"
 
+  /**
+   * imageUriString can be:
+   *   • file://…  (camera)
+   *   • content://… (gallery or newer CameraX)
+   */
   @ReactMethod
-  fun recognizeText(imagePath: String, promise: Promise) {
+  fun recognizeText(imageUriString: String, promise: Promise) {
     try {
-      val bitmap = BitmapFactory.decodeFile(imagePath)
-      val image = InputImage.fromBitmap(bitmap, 0)
-      val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+      val uri = Uri.parse(imageUriString)
 
-      recognizer.process(image)
+      val image = InputImage.fromFilePath(reactApplicationContext, uri)
+
+      val recognizer = TextRecognition.getClient(
+        TextRecognizerOptions.DEFAULT_OPTIONS
+      )
+
+      recognizer
+        .process(image)
         .addOnSuccessListener { visionText ->
-          promise.resolve(visionText.text)
+          promise.resolve(visionText.text)   // send text back to JS
         }
         .addOnFailureListener { e ->
           promise.reject("TEXT_RECOGNITION_FAILED", e)
