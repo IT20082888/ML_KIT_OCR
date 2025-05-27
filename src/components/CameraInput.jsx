@@ -9,7 +9,7 @@ const CameraInput = ({ onImageCaptured }) => {
         onImageCaptured(response.assets[0].uri);
       }
     });
-  }, [onImageCaptured]);
+  }, []);
 
   return <View style={styles.container} />;
 };

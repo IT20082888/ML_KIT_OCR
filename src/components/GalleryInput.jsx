@@ -9,7 +9,7 @@ const GalleryInput = ({ onImageSelected }) => {
         onImageSelected(response.assets[0].uri);
       }
     });
-  }, [onImageSelected]);
+  }, []);
 
   return <View style={styles.container} />;
 };
